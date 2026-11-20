@@ -1,32 +1,36 @@
 <script lang="ts">
   import SearchBar from './lib/SearchBar.svelte'
   import Sidebar from './lib/Sidebar.svelte'
-  import FollowUps from './lib/FollowUps.svelte'
-  import PeopleTable from './lib/PeopleTable.svelte'
-  import Calendar from './lib/Calendar.svelte'
+  import MobileNav from './lib/MobileNav.svelte'
+  import NotificationBell from './lib/NotificationBell.svelte'
+  import Home from './lib/Home.svelte'
   import Inbox from './lib/Inbox.svelte'
-  import { followUps, type Page } from './lib/data'
+  import FollowUpsPage from './lib/FollowUpsPage.svelte'
+  import Calendar from './lib/Calendar.svelte'
+  import PeopleTable from './lib/PeopleTable.svelte'
+  import ManagerView from './lib/ManagerView.svelte'
+  import type { Page } from './lib/data'
 
   let active = $state<Page>('home')
   let query = $state('')
+  let main: HTMLElement
 
-  const filtered = $derived.by(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return followUps
-    return followUps.filter((t) =>
-      [t.from, t.subject, t.preview].some((s) => s.toLowerCase().includes(q)),
-    )
+  function navigate(page: Page) {
+    active = page
+  }
+
+  // New page starts at the top (matters on phones, where the page itself scrolls).
+  $effect(() => {
+    active
+    main?.scrollTo(0, 0)
+    window.scrollTo(0, 0)
   })
-
-  const tiles: { page: Page; color: string }[] = [
-    { page: 'assigned', color: 'var(--assigned)' },
-    { page: 'new', color: 'var(--new)' },
-    { page: 'orphaned', color: 'var(--orphaned)' },
-  ]
 </script>
 
 <header>
-  <SearchBar bind:value={query} />
+  <span class="brand">elevate</span>
+  <div class="search"><SearchBar bind:value={query} /></div>
+  <div class="header-right"><NotificationBell onnavigate={navigate} /></div>
 </header>
 
 <div class="layout">
@@ -34,33 +38,27 @@
     <Sidebar bind:active />
   </aside>
 
-  <main class:wide={active !== 'home'}>
+  <main bind:this={main} class:wide={active !== 'home'}>
     {#if active === 'home'}
-      <h1>welcome, rhea</h1>
-      <FollowUps threads={filtered} />
-      <div class="tiles">
-        {#each tiles as tile}
-          <button class="tile" style:background={tile.color} onclick={() => (active = tile.page)}>
-            {tile.page}
-          </button>
-        {/each}
-      </div>
+      <Home {query} onnavigate={navigate} />
     {:else if active === 'inbox'}
       <Inbox {query} />
+    {:else if active === 'follow-ups'}
+      <FollowUpsPage {query} />
     {:else if active === 'calendar'}
       <Calendar {query} />
-    {:else if active === 'assigned' || active === 'new' || active === 'orphaned'}
-      <PeopleTable category={active} {query} />
+    {:else if active === 'manager'}
+      <ManagerView {query} />
     {:else}
-      <h1>{active}</h1>
-      <p class="placeholder">Nothing here yet.</p>
+      <PeopleTable category={active} {query} />
     {/if}
   </main>
 </div>
 
+<div class="mobile-nav"><MobileNav bind:active /></div>
+
 <style>
-  /* Fluid sizing: every dimension scales with the viewport (mostly height, the
-     tighter constraint on laptops) so the whole landing page fits on screen. */
+  /* Desktop: everything fits in the viewport; each page scrolls inside itself. */
   :global(#app) {
     display: flex;
     flex-direction: column;
@@ -68,11 +66,25 @@
     height: 100dvh;
   }
   header {
+    position: relative;
     flex-shrink: 0;
     display: flex;
+    align-items: center;
     justify-content: center;
     padding: clamp(12px, 3vh, 36px) 16px clamp(8px, 1.5vh, 16px);
     background: var(--bg);
+  }
+  .search {
+    display: flex;
+    justify-content: center;
+    width: min(520px, 100%);
+  }
+  .brand {
+    display: none;
+  }
+  .header-right {
+    position: absolute;
+    right: 24px;
   }
   .layout {
     flex: 1;
@@ -90,82 +102,69 @@
     align-items: center;
     min-height: 0;
     overflow-y: auto;
-    padding: clamp(12px, 4vh, 100px) clamp(24px, 5vw, 120px) clamp(12px, 3vh, 60px);
+    padding: clamp(12px, 4vh, 72px) clamp(24px, 5vw, 120px) clamp(12px, 3vh, 48px);
     background: var(--panel);
-  }
-  main > :global(section) {
-    max-width: 1100px;
   }
   main.wide {
     padding: clamp(16px, 4vh, 48px) clamp(16px, 3vw, 48px);
   }
-  h1 {
-    flex-shrink: 0;
-    margin: 0 0 clamp(6px, 2.5vh, 40px);
-    font-family: var(--heading);
-    font-weight: 500;
-    font-size: 32px; /* 24pt */
-    line-height: 1.1;
-    letter-spacing: -0.5px;
-  }
-  .tiles {
-    flex-shrink: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-    margin-top: clamp(16px, 4vh, 48px);
-  }
-  .tile {
-    min-width: 120px;
-    padding: 10px 24px;
-    border: none;
-    border-radius: 0;
-    font-family: var(--sans);
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-  }
-  .tile:hover {
-    transform: scale(1.08);
-  }
-  .tile:active {
-    transform: scale(1.02);
-  }
-  .tile:focus-visible {
-    outline: 2px solid var(--text);
-    outline-offset: 3px;
-  }
-  .placeholder {
-    color: var(--muted);
+  .mobile-nav {
+    display: none;
   }
 
-  @media (max-width: 860px) {
+  /* Tablet: keep the sidebar but tighten spacing. */
+  @media (max-width: 1100px) and (min-width: 761px) {
+    .layout {
+      grid-template-columns: 170px 1fr;
+    }
+    .header-right {
+      right: 16px;
+    }
+  }
+
+  /* Phone: banking-app layout. Sticky top bar, page scrolls, bottom tab bar. */
+  @media (max-width: 760px) {
     :global(#app) {
       height: auto;
+      min-height: 100dvh;
     }
-    .layout {
-      grid-template-columns: 1fr;
-    }
-    aside {
-      padding: 8px 16px;
-      border-right: none;
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
       border-bottom: 1px solid var(--border);
     }
-    aside :global(nav) {
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 4px;
-      padding: 0;
+    .brand {
+      display: block;
+      font-family: var(--heading);
+      font-size: 22px;
+      font-weight: 500;
     }
-    aside :global(nav button) {
-      width: auto;
-      transform-origin: center;
+    .header-right {
+      position: static;
+    }
+    .search {
+      order: 3;
+      width: 100%;
+    }
+    .layout {
+      display: block;
+    }
+    aside {
+      display: none;
     }
     main,
     main.wide {
-      padding: 24px 16px;
+      display: block;
+      overflow: visible;
+      padding: 16px 16px calc(88px + env(safe-area-inset-bottom));
+    }
+    .mobile-nav {
+      display: block;
     }
   }
 </style>

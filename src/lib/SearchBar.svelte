@@ -63,4 +63,16 @@
     font-size: 15px;
     color: var(--muted);
   }
+
+  @media (max-width: 760px) {
+    .search {
+      width: 100%;
+    }
+    input {
+      font-size: 16px;
+    }
+    kbd {
+      display: none;
+    }
+  }
 </style>

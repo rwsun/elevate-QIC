@@ -1,41 +1,21 @@
-export type Page = 'home' | 'inbox' | 'follow-ups' | 'calendar' | 'assigned' | 'new' | 'orphaned'
+export type Page =
+  | 'home'
+  | 'inbox'
+  | 'follow-ups'
+  | 'calendar'
+  | 'assigned'
+  | 'new'
+  | 'orphaned'
+  | 'manager'
 
-export interface Thread {
-  id: number
-  from: string
-  subject: string
-  count: number
-  preview: string
-  date: string
-  unread: boolean
+// 24-unit viewBox line icons, shared by the sidebar and the mobile tab bar.
+export const pageIcons: Record<Page, string> = {
+  home: 'M3 11 12 4l9 7M5 10v10h5v-6h4v6h5V10',
+  inbox: 'M3 13h5l1.5 3h5L16 13h5M5 5h14l2 8v6H3v-6z',
+  'follow-ups': 'M4 12a8 8 0 1 0 2.3-5.7M4 4v4h4M12 8v4l3 2',
+  calendar: 'M4 6h16v14H4zM4 10h16M8 3v5M16 3v5',
+  assigned: 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M2 21v-1a6 6 0 0 1 11-3.3M15 18l2 2 4-4',
+  new: 'M12 5v14M5 12h14',
+  orphaned: 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M2 21v-1a6 6 0 0 1 11-3.3M16 15l5 5M21 15l-5 5',
+  manager: 'M5 21V4M5 4h11l-2 4 2 4H5',
 }
-
-export const followUps: Thread[] = [
-  {
-    id: 1,
-    from: 'Victoria Biancaniello',
-    subject: 'Re: Term life insurance quote',
-    count: 4,
-    preview: 'Thanks for sending the 20-year term comparison! Would raising the coverage to $500k change the monthly…',
-    date: 'Nov 20',
-    unread: true,
-  },
-  {
-    id: 2,
-    from: 'Angelina Tang',
-    subject: 'Booking a call to discuss whole life vs. term',
-    count: 2,
-    preview: 'Hi! Would Thursday at 2pm work for a quick call? I want to understand the cash value on a whole life…',
-    date: 'Nov 19',
-    unread: true,
-  },
-  {
-    id: 3,
-    from: 'Ren Sun, Anuththi, Rhea',
-    subject: 'Fwd: Updating beneficiaries on a life insurance policy',
-    count: 6,
-    preview: 'Looping in Rhea — Anuththi wants to add her sister as a beneficiary and asked whether the medical…',
-    date: 'Nov 18',
-    unread: false,
-  },
-]

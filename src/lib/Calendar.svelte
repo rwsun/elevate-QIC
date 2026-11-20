@@ -238,6 +238,29 @@
       </div>
     </div>
   </div>
+
+  <!-- Phone: week as an agenda list (a 7-column grid doesn't fit) -->
+  <div class="agenda">
+    {#each days as d}
+      {@const dayEvents = [...eventsOn(d, false), ...eventsOn(d, true)]}
+      <section class="agenda-day" class:is-today={sameDay(d, today)}>
+        <h3>
+          <span class="a-dow">{DAY_NAMES[d.getDay()]}</span>
+          <span class="a-num">{d.getDate()}</span>
+          {#if sameDay(d, today)}<span class="a-today">Today</span>{/if}
+        </h3>
+        {#each dayEvents as e (e.id)}
+          <div class="a-event" class:dimmed={e.dimmed} style:--c={categoryColors[e.category]}>
+            <span class="a-time">{e.start == null ? 'All day' : fmtRange(e)}</span>
+            <span class="a-title">{e.title}</span>
+            <span class="a-meta">{e.person}{e.where ? ` · ${e.where}` : ''}</span>
+          </div>
+        {:else}
+          <p class="a-none">No meetings</p>
+        {/each}
+      </section>
+    {/each}
+  </div>
 </div>
 
 <style>
@@ -593,6 +616,100 @@
     }
     .side {
       display: none;
+    }
+  }
+
+  .agenda {
+    display: none;
+  }
+  @media (max-width: 760px) {
+    .cal {
+      border: none;
+      background: none;
+    }
+    .toolbar {
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 0 12px;
+      border-bottom: none;
+    }
+    h2 {
+      order: -1;
+      width: 100%;
+      font-size: 22px;
+    }
+    .view-label {
+      display: none;
+    }
+    .body {
+      display: none;
+    }
+    .agenda {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .agenda-day {
+      border: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .agenda-day h3 {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin: 0;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--heading);
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .a-dow {
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .a-num {
+      font-size: 20px;
+    }
+    .agenda-day.is-today h3 {
+      background: var(--active);
+    }
+    .a-today {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .a-event {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: 2px 12px;
+      padding: 10px 14px;
+      border-left: 4px solid var(--c);
+      border-bottom: 1px solid var(--border);
+    }
+    .a-event:last-child {
+      border-bottom: none;
+    }
+    .a-time {
+      grid-row: span 2;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .a-title {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .a-meta {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .a-none {
+      margin: 0;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--muted);
     }
   }
 </style>

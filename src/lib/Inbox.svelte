@@ -423,8 +423,6 @@
               class="countdown"
               class:overdue={dayOf(m) > DEADLINE_DAYS}
               style:background={phaseColor[ph][0]}
-              style:--bar={phaseColor[ph][1]}
-              style:--pct="{Math.min(100, (dayOf(m) / DEADLINE_DAYS) * 100)}%"
               title={countdownTitle(m)}
               onclick={() => (countdownMode = countdownMode === 'day' ? 'left' : 'day')}
             >
@@ -778,25 +776,14 @@
   .countdown {
     position: relative;
     height: 22px;
-    padding: 0 8px 2px;
+    padding: 0 8px;
     border: none;
-    border-left: 3px solid var(--bar);
     color: #111;
     font-size: 12px;
     font-weight: 500;
     white-space: nowrap;
     cursor: pointer;
     transition: transform 0.15s;
-  }
-  /* thin progress bar along the bottom: how much of the 30 days is used */
-  .countdown::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: var(--pct);
-    height: 2px;
-    background: var(--bar);
   }
   .countdown:hover {
     transform: scale(1.08);
@@ -830,5 +817,68 @@
     border-bottom: 1px solid var(--border);
     color: var(--muted);
     font-size: 14px;
+  }
+
+  /* ---- phone: each email becomes a stacked card row ---- */
+  @media (max-width: 760px) {
+    h1 {
+      justify-content: flex-start;
+      font-size: 26px;
+    }
+    .legend {
+      width: 100%;
+      margin-left: 0;
+    }
+    .pill {
+      height: 38px;
+    }
+    .row {
+      grid-template-columns: 18px minmax(0, 1fr) auto auto;
+      grid-template-areas:
+        'lead sender sender when'
+        '. main main main'
+        '. cd bell more';
+      row-gap: 6px;
+      padding: 14px 12px 12px 8px;
+    }
+    .lead {
+      grid-area: lead;
+    }
+    .sender {
+      grid-area: sender;
+      font-weight: 500;
+    }
+    .main {
+      grid-area: main;
+    }
+    .when {
+      grid-area: when;
+    }
+    .row > .countdown {
+      grid-area: cd;
+      justify-self: start;
+    }
+    .row > .icon-btn {
+      grid-area: bell;
+      width: 40px;
+      height: 32px;
+    }
+    .row > .menu-wrap {
+      grid-area: more;
+    }
+    .row > .menu-wrap .icon-btn {
+      width: 40px;
+      height: 32px;
+    }
+    /* no hover on touch: always show the checkbox instead of the dot */
+    .lead input {
+      opacity: 1;
+    }
+    .dot {
+      display: none;
+    }
+    .section {
+      padding: 12px;
+    }
   }
 </style>

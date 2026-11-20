@@ -144,9 +144,9 @@
               <span class="num">{i + 1}</span>
               <input type="checkbox" aria-label="Select row" checked={selected.has(p.id)} onchange={() => toggle(p.id)} />
             </td>
-            <td><input name="name" bind:value={p.name} placeholder="Name" /></td>
-            <td class="email-cell"><input type="email" bind:value={p.email} placeholder="name@queensu.ca" /></td>
-            <td>
+            <td data-label="Name"><input name="name" bind:value={p.name} placeholder="Name" /></td>
+            <td class="email-cell" data-label="Email"><input type="email" bind:value={p.email} placeholder="name@queensu.ca" /></td>
+            <td data-label="Age">
               <input
                 type="number"
                 min="0"
@@ -155,8 +155,8 @@
                 oninput={(e) => setAge(p, e.currentTarget.value)}
               />
             </td>
-            <td><input bind:value={p.country} /></td>
-            <td>
+            <td data-label="Country"><input bind:value={p.country} /></td>
+            <td data-label="Last call">
               <div class="date">
                 <input type="date" bind:value={p.lastContact} />
                 {#if days != null}
@@ -374,5 +374,70 @@
     background: var(--panel);
     color: var(--muted);
     font-size: 12px;
+  }
+
+  /* ---- phone: each person is a card with labelled fields ---- */
+  @media (max-width: 760px) {
+    .toolbar {
+      flex-wrap: wrap;
+    }
+    table {
+      min-width: 0;
+    }
+    thead {
+      display: none;
+    }
+    tbody tr[data-row] {
+      position: relative;
+      display: block;
+      padding: 10px 12px 10px 44px;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr[data-row] td {
+      display: flex;
+      align-items: center;
+      border: none;
+    }
+    tbody tr[data-row] td[data-label]::before {
+      content: attr(data-label);
+      flex: 0 0 80px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    td.check {
+      position: absolute;
+      top: 12px;
+      left: 10px;
+      width: auto;
+    }
+    td.check input {
+      position: static;
+      opacity: 1;
+    }
+    td.check .num {
+      display: none;
+    }
+    .email-cell {
+      width: auto;
+      min-width: 0;
+    }
+    td input:not([type='checkbox']) {
+      padding: 8px;
+      font-size: 16px; /* prevents iOS zoom on focus */
+    }
+    .numeric {
+      text-align: left;
+    }
+    tbody tr[data-row] td > input,
+    .date {
+      flex: 1;
+      min-width: 0;
+    }
+    .date input {
+      min-width: 0;
+    }
+    .since {
+      padding: 0 4px;
+    }
   }
 </style>
