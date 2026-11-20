@@ -17,7 +17,7 @@
 <svelte:window onkeydown={onKeydown} />
 
 <label class="search">
-  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
     <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2" />
     <path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
   </svg>
@@ -29,9 +29,9 @@
   .search {
     display: flex;
     align-items: center;
-    gap: 10px;
-    width: min(520px, 100%);
-    padding: 10px 20px;
+    gap: 8px;
+    width: min(360px, 100%);
+    padding: 6px 12px;
     border: 1px solid var(--border);
     border-radius: 0;
     background: var(--bg);
@@ -49,7 +49,7 @@
     outline: none;
     background: transparent;
     font: inherit;
-    font-size: 18px;
+    font-size: 14px;
     color: var(--text);
   }
   input::placeholder {
@@ -60,7 +60,7 @@
   }
   kbd {
     font-family: var(--body);
-    font-size: 15px;
+    font-size: 12px;
     color: var(--muted);
   }
 

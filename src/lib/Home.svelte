@@ -1,3 +1,8 @@
+<script lang="ts" module>
+  // Type the greeting only on the first landing, not every time Home re-opens.
+  let typedOnce = false
+</script>
+
 <script lang="ts">
   import type { Page } from './data'
   import { ME, type Email } from './mail.svelte'
@@ -17,6 +22,31 @@
   let { query = '', onnavigate }: { query?: string; onnavigate: (page: Page) => void } = $props()
 
   const DUE_SOON_COUNT = 5
+
+  // ---- typewriter greeting ----
+  const GREETING = 'welcome, rhea'
+  const TYPE_MS = 75
+  // Snapshot on purpose: decided once when Home mounts.
+  const animate = !typedOnce
+  let typed = $state(animate ? 0 : GREETING.length)
+  const typing = $derived(typed < GREETING.length)
+
+  $effect(() => {
+    if (!animate) return
+    typedOnce = true
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      typed = GREETING.length
+      return
+    }
+    const t = setInterval(() => {
+      typed += 1
+      if (typed >= GREETING.length) clearInterval(t)
+    }, TYPE_MS)
+    return () => {
+      clearInterval(t)
+      typed = GREETING.length
+    }
+  })
 
   const matches = (m: Email) => {
     const q = query.trim().toLowerCase()
@@ -47,7 +77,11 @@
 </script>
 
 <div class="home">
-  <h1>welcome, rhea</h1>
+  <h1 aria-label={GREETING}>
+    <!-- invisible full text reserves the width so nothing shifts while typing -->
+    <span class="ghost" aria-hidden="true">{GREETING}</span>
+    <span class="typed" aria-hidden="true">{GREETING.slice(0, typed)}{#if animate && typing}<span class="caret"></span>{/if}</span>
+  </h1>
 
   <div class="stats">
     <button class="stat amber" onclick={() => onnavigate('follow-ups')}>
@@ -107,6 +141,37 @@
     font-family: var(--heading);
     font-size: 32px; /* 24pt */
     font-weight: 400;
+  }
+  h1 {
+    position: relative;
+  }
+  .ghost {
+    visibility: hidden;
+  }
+  .typed {
+    position: absolute;
+    left: 0;
+    top: 0;
+    white-space: pre;
+  }
+  .caret {
+    display: inline-block;
+    width: 3px;
+    height: 0.9em;
+    margin-left: 3px;
+    vertical-align: -0.05em;
+    background: currentColor;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .caret {
+      display: none;
+    }
   }
   .stats {
     display: grid;

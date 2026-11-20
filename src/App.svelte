@@ -77,13 +77,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: clamp(12px, 3vh, 36px) 16px clamp(8px, 1.5vh, 16px);
+    padding: clamp(10px, 2vh, 24px) 16px clamp(8px, 1.2vh, 12px);
     background: var(--bg);
   }
   .search {
     display: flex;
     justify-content: center;
-    width: min(520px, 100%);
+    width: min(360px, 100%);
   }
   .brand {
     display: none;
