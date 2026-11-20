@@ -59,7 +59,7 @@
     display: none;
   }
   kbd {
-    font-family: var(--sans);
+    font-family: var(--body);
     font-size: 15px;
     color: var(--muted);
   }

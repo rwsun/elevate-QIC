@@ -238,7 +238,7 @@
   .age strong {
     font-family: var(--heading);
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 400;
   }
   .age.late strong {
     color: #b42318;

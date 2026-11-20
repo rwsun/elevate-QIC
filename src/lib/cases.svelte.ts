@@ -59,6 +59,15 @@ export function formatPayout(n: number) {
 }
 export const formatDate = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
+/** The beneficiary's name if the case is from a known person (not a department), else null. */
+export function beneficiaryName(m: Email) {
+  for (const list of Object.values(records)) {
+    const p = list.find((x) => x.name && m.from.includes(x.name.split(' ')[0]))
+    if (p) return p.name
+  }
+  return null
+}
+
 export function emailOf(name: string) {
   for (const list of Object.values(records)) {
     const p = list.find((x) => x.name === name)

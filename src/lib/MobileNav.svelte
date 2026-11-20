@@ -9,7 +9,8 @@
     { page: 'follow-ups', label: 'Follow-ups' },
     { page: 'calendar', label: 'Calendar' },
   ]
-  const more: Page[] = ['assigned', 'new', 'orphaned', 'manager']
+  const more: Page[] = ['assigned', 'new', 'orphaned', 'manager', 'analytics']
+  const managerPages: Page[] = ['manager', 'analytics']
 
   let sheetOpen = $state(false)
   const moreActive = $derived(more.includes(active))
@@ -31,9 +32,10 @@
   <div class="sheet" role="dialog" aria-label="More pages">
     <div class="grabber" aria-hidden="true"></div>
     {#each more as p}
+      {#if p === managerPages[0]}<span class="sheet-heading">manager</span>{/if}
       <button class="sheet-item" class:active={active === p} onclick={() => go(p)}>
-        {@render glyph(pageIcons[p])}
-        <span>{p === 'manager' ? 'manager view' : p}</span>
+        {@render glyph(pageIcons[p === 'manager' ? 'home' : p])}
+        <span>{p === 'manager' ? 'home' : p}</span>
         <svg class="chev" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
           <path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" />
         </svg>
@@ -109,6 +111,15 @@
     height: 4px;
     margin: 0 auto 8px;
     background: #c9ccd1;
+  }
+  .sheet-heading {
+    display: block;
+    padding: 14px 20px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--muted);
   }
   .sheet-item {
     display: flex;

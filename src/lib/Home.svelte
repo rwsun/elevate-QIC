@@ -1,7 +1,16 @@
 <script lang="ts">
   import type { Page } from './data'
   import { ME, type Email } from './mail.svelte'
-  import { clock, daysLeft, formatPayout, openCases } from './cases.svelte'
+  import {
+    clock,
+    daysLeft,
+    formatPayout,
+    openCases,
+    openDrawer,
+    isAssignedCase,
+    isNewCase,
+    isOrphanedCase,
+  } from './cases.svelte'
   import CountdownChip from './CountdownChip.svelte'
   import Payout from './Payout.svelte'
 
@@ -29,11 +38,12 @@
   const overdue = $derived(cases.filter((m) => daysLeft(m) < 0).length)
   const openTotal = $derived(cases.reduce((s, m) => s + (m.payout ?? 0), 0))
 
-  const categories: { page: Page; color: string }[] = [
-    { page: 'assigned', color: 'var(--assigned)' },
-    { page: 'new', color: 'var(--new)' },
-    { page: 'orphaned', color: 'var(--orphaned)' },
-  ]
+  // Live counts on the category buttons, e.g. "orphaned (5)".
+  const categories = $derived([
+    { page: 'assigned' as Page, color: 'var(--assigned)', n: cases.filter(isAssignedCase).length },
+    { page: 'new' as Page, color: 'var(--new)', n: cases.filter((m) => isNewCase(m, clock.now)).length },
+    { page: 'orphaned' as Page, color: 'var(--orphaned)', n: cases.filter(isOrphanedCase).length },
+  ])
 </script>
 
 <div class="home">
@@ -62,7 +72,7 @@
     <ul>
       {#each dueSoon as m (m.id)}
         <li>
-          <button class="item" onclick={() => onnavigate('follow-ups')}>
+          <button class="item" onclick={() => openDrawer(m)}>
             <span class="chip"><CountdownChip email={m} /></span>
             <span class="case">
               <span class="subject">{m.subject}</span>
@@ -79,7 +89,7 @@
 
   <div class="categories">
     {#each categories as c}
-      <button class="category" style:background={c.color} onclick={() => onnavigate(c.page)}>{c.page}</button>
+      <button class="category" style:background={c.color} onclick={() => onnavigate(c.page)}>{c.page} ({c.n})</button>
     {/each}
   </div>
 </div>
@@ -96,7 +106,7 @@
     margin: 0 0 clamp(12px, 3vh, 32px);
     font-family: var(--heading);
     font-size: 32px; /* 24pt */
-    font-weight: 500;
+    font-weight: 400;
   }
   .stats {
     display: grid;
@@ -130,7 +140,7 @@
   .num {
     font-family: var(--heading);
     font-size: clamp(22px, 3.4vh, 28px);
-    font-weight: 500;
+    font-weight: 400;
     line-height: 1.1;
   }
   .label {
@@ -151,7 +161,7 @@
     margin: 0;
     font-family: var(--heading);
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 400;
   }
   .link {
     padding: 0;

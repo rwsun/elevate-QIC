@@ -122,13 +122,13 @@
     padding: 12px 14px 4px;
     font-family: var(--heading);
     font-size: 18px;
-    font-weight: 500;
+    font-weight: 400;
   }
   .link {
     padding: 0;
     border: none;
     background: none;
-    font-family: var(--sans);
+    font-family: var(--body);
     font-size: 13px;
     text-decoration: underline;
     cursor: pointer;

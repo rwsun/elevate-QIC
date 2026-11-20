@@ -1,11 +1,11 @@
 <script lang="ts">
   import type { Email } from './mail.svelte'
-  import { formatPayout, recordConsent } from './cases.svelte'
+  import { beneficiaryName, formatPayout, recordConsent } from './cases.svelte'
 
   let { email, onclose }: { email: Email; onclose: () => void } = $props()
 
   const url = $derived(`https://elevate.example/consent/${email.policyNo}`)
-  const firstName = $derived(email.from.split(/[ ,]/)[0])
+  const firstName = $derived(beneficiaryName(email)?.split(' ')[0] ?? 'beneficiary')
 
   // Placeholder QR pattern (not scannable): three finder squares plus a
   // deterministic pattern from the policy number. Swap in a real QR library later.

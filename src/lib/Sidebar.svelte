@@ -3,15 +3,27 @@
 
   let { active = $bindable('home') }: { active?: Page } = $props()
 
-  const pages: Page[] = ['home', 'inbox', 'follow-ups', 'calendar', 'assigned', 'new', 'orphaned', 'manager']
+  type Item = { page: Page; label: string; icon: string }
+  const item = (page: Page, label: string = page, icon: Page = page): Item => ({ page, label, icon: icons[icon] })
+
+  const groups: { heading: string | null; items: Item[] }[] = [
+    {
+      heading: null,
+      items: (['home', 'inbox', 'follow-ups', 'calendar', 'assigned', 'new', 'orphaned'] as Page[]).map((p) => item(p)),
+    },
+    // Manager tools: the overdue/escalation view is the manager's "home".
+    { heading: 'manager', items: [item('manager', 'home', 'home'), item('analytics')] },
+  ]
 </script>
 
 <nav>
-  {#each pages as page}
-    <button class:active={active === page} onclick={() => (active = page)}>
+  {#each groups as g}
+    {#if g.heading}<span class="heading">{g.heading}</span>{/if}
+    {#each g.items as { page, label, icon }}
+    <button class:active={active === page} aria-current={active === page ? 'page' : undefined} onclick={() => (active = page)}>
       <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
         <path
-          d={icons[page]}
+          d={icon}
           fill="none"
           stroke="currentColor"
           stroke-width="1.8"
@@ -19,8 +31,9 @@
           stroke-linejoin="round"
         />
       </svg>
-      {page}
+      {label}
     </button>
+    {/each}
   {/each}
 </nav>
 
@@ -30,6 +43,15 @@
     flex-direction: column;
     gap: 2px;
     padding: 12px 8px;
+  }
+  .heading {
+    margin: 18px 0 4px;
+    padding: 0 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--muted);
   }
   button {
     display: flex;
@@ -41,7 +63,7 @@
     border-radius: 0;
     background: transparent;
     text-align: left;
-    font-family: var(--sans);
+    font-family: var(--body);
     font-size: 14px;
     font-weight: 500;
     white-space: nowrap;

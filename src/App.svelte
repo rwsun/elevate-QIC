@@ -7,7 +7,9 @@
   import Inbox from './lib/Inbox.svelte'
   import FollowUpsPage from './lib/FollowUpsPage.svelte'
   import Calendar from './lib/Calendar.svelte'
-  import PeopleTable from './lib/PeopleTable.svelte'
+  import CategoryPage from './lib/CategoryPage.svelte'
+  import Analytics from './lib/Analytics.svelte'
+  import CaseDrawer from './lib/CaseDrawer.svelte'
   import ManagerView from './lib/ManagerView.svelte'
   import type { Page } from './lib/data'
 
@@ -49,13 +51,17 @@
       <Calendar {query} />
     {:else if active === 'manager'}
       <ManagerView {query} />
+    {:else if active === 'analytics'}
+      <Analytics />
     {:else}
-      <PeopleTable category={active} {query} />
+      <CategoryPage category={active} {query} />
     {/if}
   </main>
 </div>
 
 <div class="mobile-nav"><MobileNav bind:active /></div>
+
+<CaseDrawer />
 
 <style>
   /* Desktop: everything fits in the viewport; each page scrolls inside itself. */
@@ -142,7 +148,7 @@
       display: block;
       font-family: var(--heading);
       font-size: 22px;
-      font-weight: 500;
+      font-weight: 400;
     }
     .header-right {
       position: static;

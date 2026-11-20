@@ -7,6 +7,7 @@ export type Page =
   | 'new'
   | 'orphaned'
   | 'manager'
+  | 'analytics'
 
 // 24-unit viewBox line icons, shared by the sidebar and the mobile tab bar.
 export const pageIcons: Record<Page, string> = {
@@ -18,4 +19,5 @@ export const pageIcons: Record<Page, string> = {
   new: 'M12 5v14M5 12h14',
   orphaned: 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M2 21v-1a6 6 0 0 1 11-3.3M16 15l5 5M21 15l-5 5',
   manager: 'M5 21V4M5 4h11l-2 4 2 4H5',
+  analytics: 'M5 20V11M12 20V5M19 20v-6M3 20h18',
 }

@@ -12,7 +12,9 @@
     openCases,
     remindersFor,
     sendNudge,
+    openDrawer,
   } from './cases.svelte'
+  import ConsentBadge from './ConsentBadge.svelte'
   import CountdownChip from './CountdownChip.svelte'
   import Payout from './Payout.svelte'
 
@@ -91,8 +93,8 @@
           <span><CountdownChip email={m} /></span>
           <span><Payout amount={m.payout!} /></span>
           <span class="case">
-            <span class="subject">{m.subject}</span>
-            <span class="client">{m.from} · due {formatDate(new Date(new Date(m.opened + 'T00:00').getTime() + (DEADLINE_DAYS - 1) * 86_400_000))}</span>
+            <button class="subject open" onclick={() => openDrawer(m)}>{m.subject}</button>
+            <span class="client"><ConsentBadge consent={m.consent} /> {m.from} · due {formatDate(new Date(new Date(m.opened + 'T00:00').getTime() + (DEADLINE_DAYS - 1) * 86_400_000))}</span>
           </span>
           <span>
             <select value={m.assignee ?? ''} onchange={(e) => reassign(m, e.currentTarget.value)} aria-label="Owner">
@@ -122,8 +124,8 @@
           <span><CountdownChip email={m} /></span>
           <span><Payout amount={m.payout!} /></span>
           <span class="case">
-            <span class="subject">{m.subject}</span>
-            <span class="client">{m.from}</span>
+            <button class="subject open" onclick={() => openDrawer(m)}>{m.subject}</button>
+            <span class="client"><ConsentBadge consent={m.consent} /> {m.from}</span>
           </span>
           <span class="owner">{m.assignee ?? 'Unassigned'}</span>
           <span></span>
@@ -150,14 +152,14 @@
     margin: 0 0 clamp(10px, 2vh, 20px);
     font-family: var(--heading);
     font-size: 32px; /* 24pt */
-    font-weight: 500;
+    font-weight: 400;
     text-align: center;
   }
   h2 {
     margin: 20px 0 8px;
     font-family: var(--heading);
     font-size: 18px;
-    font-weight: 500;
+    font-weight: 400;
   }
   h2:first-child {
     margin-top: 0;
@@ -186,7 +188,7 @@
   .num {
     font-family: var(--heading);
     font-size: 26px;
-    font-weight: 500;
+    font-weight: 400;
   }
   .label {
     font-size: 13px;
@@ -226,6 +228,27 @@
     flex-direction: column;
     gap: 2px;
     min-width: 0;
+  }
+  .row {
+    position: relative;
+  }
+  .open {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .open::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .actions,
+  select {
+    position: relative;
+    z-index: 1;
   }
   .subject {
     font-weight: 600;

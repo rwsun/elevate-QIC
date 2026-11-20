@@ -10,6 +10,7 @@
     formatPayout,
     ageDays,
     routeOf,
+    autoRoute,
     routeReason,
     routeTargets,
     claim,
@@ -151,7 +152,7 @@
               value={m.routeOverride ?? ''}
               onchange={(e) => overrideRoute(m, e.currentTarget.value || null)}
             >
-              <option value="">Auto rule ({routeReason({ ...m, routeOverride: null }).replace('auto: ', '')})</option>
+              <option value="">Auto rule → {autoRoute(m)}</option>
               {#each routeTargets as t}
                 <option value={t}>{t === LEGACY_DESK ? t : `${t}${t === ME ? ' (me)' : ' (backup advisor)'}`}</option>
               {/each}
@@ -339,7 +340,7 @@
     margin: 6px 0 4px;
     font-family: var(--heading);
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 400;
     line-height: 1.3;
   }
   .client {
@@ -375,7 +376,7 @@
     margin: 0 0 10px;
     font-family: var(--heading);
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 400;
   }
   p {
     margin: 0 0 10px;
@@ -434,12 +435,15 @@
   }
   label {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 4px;
     font-size: 12px;
     color: var(--muted);
   }
   select,
   input:not([type='checkbox']) {
+    width: 100%;
+    min-width: 0;
     height: 38px;
     padding: 0 10px;
     border: 1px solid #c9ccd1;

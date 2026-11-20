@@ -10,7 +10,9 @@
     isEscalated,
     openCases,
     sendNudge,
+    openDrawer,
   } from './cases.svelte'
+  import ConsentBadge from './ConsentBadge.svelte'
   import CountdownChip from './CountdownChip.svelte'
   import Payout from './Payout.svelte'
 
@@ -96,32 +98,49 @@
       <span role="columnheader">Payout</span>
       <span role="columnheader">Case</span>
       <span role="columnheader">Owner</span>
-      <span role="columnheader" title="In-app and email reminders on day 15, 25 and 30">Reminders</span>
+      <span role="columnheader" title="In-app and email reminders on day 15, 25 and 30">Reminders · in-app + email</span>
       <span role="columnheader"></span>
     </div>
 
     <div class="body">
       {#each rows as m (m.id)}
         {@const day = dayOf(m, clock.now)}
+        {@const next = REMINDER_DAYS.find((r) => day < r)}
         <div class="row" role="row" class:flagged={isEscalated(m, clock.now)}>
           <span role="cell"><CountdownChip email={m} /></span>
           <span role="cell"><Payout amount={m.payout!} /></span>
           <span role="cell" class="case">
-            <span class="subject">{m.subject}</span>
+            <button class="subject open" onclick={() => openDrawer(m)}>{m.subject}</button>
             <span class="client">
               {m.from}
+              <ConsentBadge consent={m.consent} />
               {#if isEscalated(m, clock.now)}<span class="flag">Flagged for manager</span>{/if}
             </span>
           </span>
           <span role="cell" class="owner" class:none={!m.assignee}>
             {m.assignee ? (m.assignee === ME ? 'Me' : m.assignee) : 'Unassigned'}
           </span>
-          <span role="cell" class="trail" aria-label="Reminders sent">
+          <span role="cell" class="trail" aria-label="Reminders">
             {#each REMINDER_DAYS as r}
-              <span class="step" class:sent={day >= r} class:esc={r === 30 && day >= r} title="Day {r}: {day >= r
-                ? 'in-app + email sent'
-                : 'not yet'}">{r}</span
+              {@const sent = day >= r}
+              <span
+                class="step"
+                class:sent
+                class:next={r === next}
+                title="Day {r} reminder (in-app + email{r === 30 ? ', flags manager' : ''}): {sent
+                  ? 'sent'
+                  : `goes out in ${r - day} ${r - day === 1 ? 'day' : 'days'}`}"
               >
+                <span class="step-day">
+                  {#if sent}
+                    <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true">
+                      <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" />
+                    </svg>
+                  {/if}
+                  Day {r}
+                </span>
+                <span class="step-state">{sent ? 'Sent' : r - day === 1 ? 'in 1 day' : `in ${r - day} days`}</span>
+              </span>
             {/each}
           </span>
           <span role="cell" class="actions">
@@ -171,7 +190,7 @@
     margin: 0 0 clamp(10px, 2vh, 20px);
     font-family: var(--heading);
     font-size: 32px; /* 24pt */
-    font-weight: 500;
+    font-weight: 400;
     text-align: center;
   }
   .bar {
@@ -256,7 +275,7 @@
   }
   .row {
     display: grid;
-    grid-template-columns: 116px 84px minmax(0, 1fr) 120px 104px 150px;
+    grid-template-columns: 116px 84px minmax(0, 1fr) 110px 240px 150px;
     align-items: center;
     gap: 12px;
     padding: 10px 14px;
@@ -283,6 +302,28 @@
     gap: 2px;
     min-width: 0;
   }
+  .body .row {
+    position: relative;
+  }
+  /* subject opens the case drawer; its hit area covers the row */
+  .open {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .open::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .actions,
+  .trail {
+    position: relative;
+    z-index: 1;
+  }
   .subject {
     font-weight: 600;
     overflow: hidden;
@@ -291,12 +332,14 @@
   }
   .client {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
+    gap: 4px 8px;
     font-size: 13px;
     color: var(--muted);
   }
   .flag {
+    white-space: nowrap;
     padding: 1px 6px;
     background: #111;
     color: #fff;
@@ -313,26 +356,45 @@
     font-style: normal;
   }
   .trail {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 4px;
   }
+  /* upcoming: faint dashed outline */
   .step {
-    display: grid;
-    place-items: center;
-    width: 26px;
-    height: 20px;
-    border: 1px solid #c9ccd1;
-    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    height: 40px;
+    padding: 0 8px;
+    border: 1px dashed #c9ccd1;
+    background: var(--bg);
     color: var(--muted);
+    line-height: 1.2;
   }
+  .step-day {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .step-state {
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  /* the next reminder to go out: solid, dark outline so it reads first */
+  .step.next {
+    border: 2px solid #111;
+    color: #111;
+  }
+  /* already sent: grey, done */
   .step.sent {
-    border-color: #111;
-    background: #111;
-    color: #fff;
-  }
-  .step.esc {
-    border-color: #b42318;
-    background: #b42318;
+    border: 1px solid #d5d8dc;
+    background: #e5e7eb;
+    color: #5f6570;
   }
   .actions {
     display: flex;

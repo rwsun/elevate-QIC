@@ -11,10 +11,11 @@
   --new: #f4bd62;
   --orphaned: #f28583;
 
-  --sans: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --heading: 'Google Sans', var(--sans);
+  /* One family everywhere: Google Sans. */
+  --body: 'Google Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --heading: var(--body);
 
-  font-family: var(--sans);
+  font-family: var(--body);
   color: var(--text);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;

@@ -47,7 +47,7 @@
     margin: 0 0 4px;
     font-family: var(--heading);
     font-size: 32px; /* 24pt */
-    font-weight: 500;
+    font-weight: 400;
   }
   .chip {
     width: 16px;
@@ -65,7 +65,7 @@
     margin: 28px 0 10px;
     font-family: var(--heading);
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 400;
   }
   @media (max-width: 760px) {
     h1 {

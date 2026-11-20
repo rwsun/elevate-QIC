@@ -323,7 +323,7 @@
     margin: 0;
     font-family: var(--heading);
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 400;
   }
   .view-label {
     margin-left: auto;
@@ -395,7 +395,7 @@
     margin: 0 0 8px;
     font-family: var(--heading);
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 400;
   }
   .legend label {
     display: flex;
@@ -662,7 +662,7 @@
       border-bottom: 1px solid var(--border);
       font-family: var(--heading);
       font-size: 16px;
-      font-weight: 500;
+      font-weight: 400;
     }
     .a-dow {
       font-size: 12px;

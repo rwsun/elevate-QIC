@@ -10,6 +10,7 @@
     type Email,
     type Label,
   } from './mail.svelte'
+  import { openDrawer } from './cases.svelte'
 
   let { query = '' }: { query?: string } = $props()
 
@@ -369,7 +370,14 @@
 
             <div class="main">
               <div class="line1">
-                <button class="subject" onclick={() => (m.unread = false)}>{m.subject}</button>
+                <button
+                  class="subject"
+                  title={m.payout != null ? 'Open case' : undefined}
+                  onclick={() => {
+                    m.unread = false
+                    if (m.payout != null) openDrawer(m)
+                  }}>{m.subject}</button
+                >
                 {#if m.icon === 'cake'}
                   <svg class="subject-icon" viewBox="0 0 24 24" width="16" height="16" aria-label="birthday">
                     <path
@@ -495,7 +503,7 @@
     margin: 0 0 clamp(10px, 2vh, 20px);
     font-family: var(--heading);
     font-size: 32px; /* 24pt */
-    font-weight: 500;
+    font-weight: 400;
   }
 
   /* ---- filter bar ---- */

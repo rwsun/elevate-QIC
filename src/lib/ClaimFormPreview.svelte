@@ -1,20 +1,20 @@
 <script lang="ts">
   import type { Email } from './mail.svelte'
-  import { logActivity, recordConsent } from './cases.svelte'
+  import { beneficiaryName, logActivity, recordConsent } from './cases.svelte'
 
   let { email, onclose }: { email: Email; onclose: () => void } = $props()
 
   // The form edits its own copy of the name, prefilled from the case when it opens.
   let name = $state('')
   $effect.pre(() => {
-    if (!name) name = email.from.split(',')[0]
+    if (!name) name = beneficiaryName(email) ?? ''
   })
   let agree = $state(false)
   let submitted = $state(false)
 
   function submit(e: SubmitEvent) {
     e.preventDefault()
-    if (agree) recordConsent(email, 'given', 'claim-form', name)
+    if (agree) recordConsent(email, 'given', 'claim-form', name || 'beneficiary')
     else logActivity(email, 'Claim form submitted without the contact consent box ticked')
     submitted = true
   }
@@ -105,7 +105,7 @@
     margin: 0;
     font-family: var(--heading);
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 400;
   }
   p {
     margin: 0;
